@@ -2039,6 +2039,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2049,15 +2079,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       addModal: false,
       editModal: false,
       isAdding: false,
-      tags: [],
+      categories: [],
       editData: {
-        tagName: ''
+        iconImage: '',
+        categoryName: ''
       },
       index: -1,
       showdeleteModal: false,
       deleteitem: {},
       indx: -1,
-      token: ''
+      token: '',
+      isIconimagenew: false
     };
   },
   methods: {
@@ -2082,44 +2114,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         desc: 'File  ' + file.name + ' is too large, no more than 2M.'
       });
     },
-    addTag: function addTag() {
-      var _this = this;
+    deleteImage: function deleteImage() {
+      var _arguments = arguments,
+          _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var res;
+        var isAdd, _image, _image2, res;
+
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this.data.tagName.trim() == '')) {
-                  _context.next = 2;
-                  break;
+                isAdd = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : true;
+
+                //console.log(this.data.iconImage)
+                if (!isAdd) {
+                  //for editing
+                  _this.isIconimagenew = true;
+                  _image = _this.editData.iconImage;
+                  _this.editData.iconImage = '';
+
+                  _this.$refs.editDatauploads.clearFiles();
+                } else {
+                  _image2 = _this.data.iconImage;
+                  _this.data.iconImage = '';
+
+                  _this.$refs.uploads.clearFiles();
                 }
 
-                return _context.abrupt("return", _this.e("Tag Name is Required"));
-
-              case 2:
                 _context.next = 4;
-                return _this.callApi('post', 'api/create_tag', _this.data);
+                return _this.callApi('post', 'api/delete_image', {
+                  imageName: image
+                });
 
               case 4:
                 res = _context.sent;
 
-                if (res.status == 201) {
-                  _this.tags.unshift(res.data);
+                if (res.status != 200) {
+                  _this.data.iconImage = image;
 
-                  _this.s('Tag has been Added Successfully');
-
-                  _this.addModal = false;
-                  _this.data.tagName = "";
-                } else {
-                  if (res.status == 422) {
-                    if (res.data.errors.tagName) {
-                      _this.i(res.data.errors.tagName[0]);
-                    }
-                  } else {
-                    _this.swr('Something Went Wrong! Please Try Again..');
-                  }
+                  _this.swr("Something Went Wrong!");
                 }
 
               case 6:
@@ -2130,7 +2164,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
-    editTag: function editTag() {
+    addCategory: function addCategory() {
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
@@ -2139,37 +2173,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(_this2.editData.tagName.trim() == '')) {
+                if (!(_this2.data.categoryName.trim() == '')) {
                   _context2.next = 2;
                   break;
                 }
 
-                return _context2.abrupt("return", _this2.e("Tag Name is Required"));
+                return _context2.abrupt("return", _this2.e("Category Name is Required"));
 
               case 2:
-                _context2.next = 4;
-                return _this2.callApi('post', 'api/edit_tag', _this2.editData);
+                if (!(_this2.data.iconImage.trim() == '')) {
+                  _context2.next = 4;
+                  break;
+                }
+
+                return _context2.abrupt("return", _this2.e("Category Image is Required"));
 
               case 4:
+                _this2.data.iconImage = "/uploads/".concat(_this2.data.iconImage);
+                _context2.next = 7;
+                return _this2.callApi('post', 'api/create_category', _this2.data);
+
+              case 7:
                 res = _context2.sent;
 
-                if (res.status == 200) {
-                  _this2.tags[_this2.index].tagName = _this2.editData.tagName;
+                if (res.status == 201) {
+                  _this2.categories.unshift(res.data);
 
-                  _this2.s('Tag has been updated Successfully');
+                  _this2.s('Category has been Added Successfully');
 
-                  _this2.editModal = false;
+                  _this2.addModal = false;
+                  _this2.data.categoryName = "";
+                  _this2.data.iconImage = "";
                 } else {
                   if (res.status == 422) {
-                    if (res.data.errors.tagName) {
-                      _this2.i(res.data.errors.tagName[0]);
+                    if (res.data.errors.categoryName) {
+                      _this2.i(res.data.errors.categoryName[0]);
+                    }
+
+                    if (res.data.errors.iconImage) {
+                      _this2.i(res.data.errors.iconImage[0]);
                     }
                   } else {
                     _this2.swr('Something Went Wrong! Please Try Again..');
                   }
                 }
 
-              case 6:
+              case 9:
               case "end":
                 return _context2.stop();
             }
@@ -2177,16 +2226,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2);
       }))();
     },
-    showEditModal: function showEditModal(tag, index) {
-      var obj = {
-        id: tag.id,
-        tagName: tag.tagName
-      };
-      this.editData = obj;
-      this.editModal = true;
-      this.index = index;
-    },
-    deleteTag: function deleteTag() {
+    editCategory: function editCategory() {
       var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
@@ -2195,28 +2235,85 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _context3.next = 2;
-                return _this3.callApi('post', 'api/delete_tag', _this3.deleteitem);
-
-              case 2:
-                res = _context3.sent;
-
-                if (res.status === 200) {
-                  _this3.tags.splice(_this3.indx, 1);
-
-                  _this3.s('Tag has been deleted Successfully');
-
-                  _this3.showdeleteModal = false;
-                } else {
-                  _this3.swr('Something Went Wrong! Please Try Again..');
+                if (!(_this3.editData.categoryName.trim() == '')) {
+                  _context3.next = 2;
+                  break;
                 }
 
+                return _context3.abrupt("return", _this3.e("Category Name is Required"));
+
+              case 2:
+                _context3.next = 4;
+                return _this3.callApi('post', 'api/edit_tag', _this3.editData);
+
               case 4:
+                res = _context3.sent;
+
+                if (res.status == 200) {
+                  _this3.categories[_this3.index].tagName = _this3.editData.tagName;
+
+                  _this3.s('Tag has been updated Successfully');
+
+                  _this3.editModal = false;
+                } else {
+                  if (res.status == 422) {
+                    if (res.data.errors.tagName) {
+                      _this3.i(res.data.errors.tagName[0]);
+                    }
+                  } else {
+                    _this3.swr('Something Went Wrong! Please Try Again..');
+                  }
+                }
+
+              case 6:
               case "end":
                 return _context3.stop();
             }
           }
         }, _callee3);
+      }))();
+    },
+    showEditModal: function showEditModal(category, index) {
+      var obj = {
+        id: category.id,
+        categoryName: category.categoryName,
+        iconImage: category.iconImage
+      };
+      this.editData = obj;
+      this.editModal = true;
+      this.index = index;
+    },
+    deleteTag: function deleteTag() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return _this4.callApi('post', 'api/delete_tag', _this4.deleteitem);
+
+              case 2:
+                res = _context4.sent;
+
+                if (res.status === 200) {
+                  _this4.categories.splice(_this4.indx, 1);
+
+                  _this4.s('Tag has been deleted Successfully');
+
+                  _this4.showdeleteModal = false;
+                } else {
+                  _this4.swr('Something Went Wrong! Please Try Again..');
+                }
+
+              case 4:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
       }))();
     },
     showTagDeleteModal: function showTagDeleteModal(tag, i) {
@@ -2225,33 +2322,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   created: function created() {
-    var _this4 = this;
+    var _this5 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
       var res;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              _this4.token = window.Laravel.csrfToken;
-              _context4.next = 3;
-              return _this4.callApi('get', 'api/get_tags');
+              _this5.token = window.Laravel.csrfToken;
+              _context5.next = 3;
+              return _this5.callApi('get', 'api/get_categories');
 
             case 3:
-              res = _context4.sent;
+              res = _context5.sent;
 
               if (res.status == 200) {
-                _this4.tags = res.data;
+                _this5.categories = res.data;
               } else {
-                _this4.swr('Something Went Wrong! Please Try Again..');
+                _this5.swr('Something Went Wrong! Please Try Again..');
               }
 
             case 5:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
-      }, _callee4);
+      }, _callee5);
     }))();
   }
 });
@@ -67612,18 +67709,28 @@ var render = function() {
                   [
                     _vm._m(0),
                     _vm._v(" "),
-                    _vm._l(_vm.tags, function(tag, i) {
-                      return _vm.tags.length
+                    _vm._l(_vm.categories, function(category, i) {
+                      return _vm.categories.length
                         ? _c("tr", { key: i }, [
                             _c("td", [_vm._v(_vm._s(i + 1))]),
                             _vm._v(" "),
-                            _c("td", { staticClass: "_table_name" }, [
-                              _vm._v(_vm._s(tag.tagName))
+                            _c("td", { staticClass: "table_name" }, [
+                              _vm._v(_vm._s(category.categoryName))
                             ]),
                             _vm._v(" "),
-                            _c("td", [_vm._v("Category")]),
+                            _c(
+                              "td",
+                              {
+                                staticStyle: { height: "100px", width: "100px" }
+                              },
+                              [
+                                _c("img", {
+                                  attrs: { src: category.iconImage, alt: "" }
+                                })
+                              ]
+                            ),
                             _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(tag.created_at))]),
+                            _c("td", [_vm._v(_vm._s(category.created_at))]),
                             _vm._v(" "),
                             _c(
                               "td",
@@ -67634,7 +67741,7 @@ var render = function() {
                                     attrs: { type: "info", size: "small" },
                                     on: {
                                       click: function($event) {
-                                        return _vm.showEditModal(tag, i)
+                                        return _vm.showEditModal(category, i)
                                       }
                                     }
                                   },
@@ -67647,11 +67754,14 @@ var render = function() {
                                     attrs: {
                                       type: "error",
                                       size: "small",
-                                      loading: tag.isDeleting
+                                      loading: category.isDeleting
                                     },
                                     on: {
                                       click: function($event) {
-                                        return _vm.showTagDeleteModal(tag, i)
+                                        return _vm.showTagDeleteModal(
+                                          category,
+                                          i
+                                        )
                                       }
                                     }
                                   },
@@ -67690,17 +67800,18 @@ var render = function() {
               _c("Input", {
                 attrs: { placeholder: "Enter category name..." },
                 model: {
-                  value: _vm.data.tagName,
+                  value: _vm.data.categoryName,
                   callback: function($$v) {
-                    _vm.$set(_vm.data, "tagName", $$v)
+                    _vm.$set(_vm.data, "categoryName", $$v)
                   },
-                  expression: "data.tagName"
+                  expression: "data.categoryName"
                 }
               }),
               _vm._v(" "),
               _c(
                 "Upload",
                 {
+                  ref: "uploads",
                   attrs: {
                     type: "drag",
                     headers: {
@@ -67734,11 +67845,35 @@ var render = function() {
               ),
               _vm._v(" "),
               _vm.data.iconImage
-                ? _c("div", { staticClass: "image_thumb" }, [
-                    _c("img", {
-                      attrs: { src: "/uploads/" + _vm.data.iconImage, alt: "" }
-                    })
-                  ])
+                ? _c(
+                    "div",
+                    { staticStyle: { height: "100px", width: "100px" } },
+                    [
+                      _c("img", {
+                        attrs: {
+                          src: "/uploads/" + _vm.data.iconImage,
+                          alt: ""
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "demo-upload-list-cover" },
+                        [
+                          _c("Icon", {
+                            staticStyle: { color: "red" },
+                            attrs: { type: "ios-trash-outline" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteImage(true)
+                              }
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  )
                 : _vm._e(),
               _vm._v(" "),
               _c(
@@ -67766,12 +67901,12 @@ var render = function() {
                         disabled: _vm.isAdding,
                         loading: _vm.isAdding
                       },
-                      on: { click: _vm.addTag }
+                      on: { click: _vm.addCategory }
                     },
                     [
                       _vm._v(
                         "\n\t\t\t\t\t\t\t" +
-                          _vm._s(_vm.isAdding ? "Adding..." : "Add Tag")
+                          _vm._s(_vm.isAdding ? "Adding..." : "Add Category")
                       )
                     ]
                   )
@@ -67786,7 +67921,7 @@ var render = function() {
             "Modal",
             {
               attrs: {
-                title: "Edit Tag",
+                title: "Edit Category",
                 "mask-closable": false,
                 closable: false
               },
@@ -67800,15 +67935,88 @@ var render = function() {
             },
             [
               _c("Input", {
-                staticStyle: { width: "300px" },
+                attrs: { placeholder: "Enter category name..." },
                 model: {
-                  value: _vm.editData.tagName,
+                  value: _vm.editData.categoryName,
                   callback: function($$v) {
-                    _vm.$set(_vm.editData, "tagName", $$v)
+                    _vm.$set(_vm.editData, "categoryName", $$v)
                   },
-                  expression: "editData.tagName"
+                  expression: "editData.categoryName"
                 }
               }),
+              _vm._v(" "),
+              _c(
+                "Upload",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isIconimagenew,
+                      expression: "isIconimagenew"
+                    }
+                  ],
+                  ref: "editDatauploads",
+                  attrs: {
+                    type: "drag",
+                    headers: {
+                      "x-csrf-token": _vm.token,
+                      "X-Requested-With": "XMLHttpRequest"
+                    },
+                    "on-success": _vm.handleSuccess,
+                    "on-error": _vm.handleError,
+                    format: ["jpg", "jpeg", "png"],
+                    "max-size": 2048,
+                    "on-format-error": _vm.handleFormatError,
+                    "on-exceeded-size": _vm.handleMaxSize,
+                    action: "/api/upload"
+                  }
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { padding: "20px 0" } },
+                    [
+                      _c("Icon", {
+                        staticStyle: { color: "#3399ff" },
+                        attrs: { type: "ios-cloud-upload", size: "52" }
+                      }),
+                      _vm._v(" "),
+                      _c("p", [_vm._v("Click or drag files here to upload")])
+                    ],
+                    1
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _vm.editData.iconImage
+                ? _c(
+                    "div",
+                    { staticStyle: { height: "100px", width: "100px" } },
+                    [
+                      _c("img", {
+                        attrs: { src: "" + _vm.editData.iconImage, alt: "" }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "demo-upload-list-cover" },
+                        [
+                          _c("Icon", {
+                            staticStyle: { color: "red" },
+                            attrs: { type: "ios-trash-outline" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteImage(false)
+                              }
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  )
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "div",
@@ -67820,7 +68028,7 @@ var render = function() {
                       attrs: { type: "default" },
                       on: {
                         click: function($event) {
-                          _vm.editModal = false
+                          _vm.addModal = false
                         }
                       }
                     },
@@ -67835,12 +68043,12 @@ var render = function() {
                         disabled: _vm.isAdding,
                         loading: _vm.isAdding
                       },
-                      on: { click: _vm.editTag }
+                      on: { click: _vm.editCategory }
                     },
                     [
                       _vm._v(
                         "\n\t\t\t\t\t\t\t" +
-                          _vm._s(_vm.isAdding ? "Updating..." : "Update Tag")
+                          _vm._s(_vm.isAdding ? "Editing..." : "Edit Category")
                       )
                     ]
                   )
@@ -67921,7 +68129,7 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("th", [_vm._v("Category Name")]),
       _vm._v(" "),
-      _c("th", [_vm._v("Category")]),
+      _c("th", [_vm._v("Category Image")]),
       _vm._v(" "),
       _c("th", [_vm._v("Created At")]),
       _vm._v(" "),
