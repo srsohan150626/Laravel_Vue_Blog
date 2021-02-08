@@ -22,4 +22,6 @@ Route::post('delete_tag','App\Http\Controllers\TagsController@delete_tag');
 Route::post('upload','App\Http\Controllers\CategoryController@upload');
 Route::post('delete_image','App\Http\Controllers\CategoryController@delete_image');
 Route::post('create_category','App\Http\Controllers\CategoryController@create_category'); 
-Route::get('get_categories','App\Http\Controllers\CategoryController@get_categories');
+Route::get('get_categories','App\Http\Controllers\CategoryController@get_categories'); 
+Route::post('edit_category','App\Http\Controllers\CategoryController@edit_category');
+Route::post('delete_category','App\Http\Controllers\CategoryController@delete_category');   

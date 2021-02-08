@@ -69,7 +69,7 @@
                         </div>
                     </Upload>
                     <div style="height:100px;width:100px;" v-if="data.iconImage">
-                        <img :src="`/uploads/${data.iconImage}`" alt="">
+                        <img :src="`${data.iconImage}`" alt="">
 						<div class="demo-upload-list-cover">
 							<Icon type="ios-trash-outline" style="color: red;" @click="deleteImage(true)"></Icon>
 						</div>
@@ -114,7 +114,7 @@
 					</div>
 					
 					<div slot="footer">
-						<Button type="default" @click="addModal=false">Close</Button>
+						<Button type="default" @click="closeEditModal">Close</Button>
 						<Button type="primary" @click="editCategory" :disabled="isAdding" :loading="isAdding">
 							{{ isAdding ? 'Editing...' : 'Edit Category' }}</Button>
 					</div>
@@ -130,7 +130,7 @@
 						<p>Are you Sure to delete this Tag?</p>
 					</div>
 					<div slot="footer">
-						<Button type="error" size="large" long :loading="isAdding" @click="deleteTag">Delete</Button>
+						<Button type="error" size="large" long :loading="isAdding" @click="deleteCategory">Delete</Button>
 					</div>
 				</Modal>
 
@@ -160,12 +160,17 @@ export default {
 			deleteitem: {},
             indx: -1,
             token: '',
-			isIconimagenew: false
+			isIconimagenew: false,
+			isEditingItem: false,
 		}
 	},
 
 	methods : {
         handleSuccess (res, file) {
+			res = `uploads/${res}`
+			if(this.isEditingItem){
+				return this.editData.iconImage = res 
+			}
             this.data.iconImage = res
         },
          handleError (res, file) {
@@ -188,14 +193,15 @@ export default {
         },
 		async deleteImage(isAdd=true){
 			//console.log(this.data.iconImage)
+			let image
 			if(!isAdd){
 				//for editing
 				this.isIconimagenew = true
-				let image = this.editData.iconImage
+				 image = this.editData.iconImage
 				this.editData.iconImage = ''
 				this.$refs.editDatauploads.clearFiles()
 			}else{
-				let image = this.data.iconImage
+				 image = this.data.iconImage
 				this.data.iconImage = ''
 				this.$refs.uploads.clearFiles()
 			}
@@ -212,7 +218,7 @@ export default {
 
 			if(this.data.iconImage.trim()=='')
 				return this.e("Category Image is Required")
-			 this.data.iconImage = `/uploads/${this.data.iconImage}`
+			 this.data.iconImage = `${this.data.iconImage}`
 			const res = await this.callApi('post', 'api/create_category', this.data)
 			if(res.status==201){
 				this.categories.unshift(res.data)
@@ -239,15 +245,21 @@ export default {
 			if(this.editData.categoryName.trim()=='')
 				return this.e("Category Name is Required")
 
-			const res = await this.callApi('post', 'api/edit_tag', this.editData)
+			if(this.editData.iconImage.trim()=='')
+				return this.e("Category Image is Required")
+
+			const res = await this.callApi('post', 'api/edit_category', this.editData)
 			if(res.status==200){
-				this.categories[this.index].tagName = this.editData.tagName
-				this.s('Tag has been updated Successfully')
+				this.categories[this.index].categoryName = this.editData.categoryName
+				this.s('Category has been updated Successfully')
 				this.editModal = false
 			}else{
 				if(res.status==422){
-					if(res.data.errors.tagName){
-						this.i(res.data.errors.tagName[0])
+					if(res.data.errors.categoryName){
+						this.i(res.data.errors.categoryName[0])
+					}
+					if(res.data.errors.iconImage){
+						this.i(res.data.errors.iconImage[0])
 					}
 				}else{
 					this.swr('Something Went Wrong! Please Try Again..')
@@ -257,29 +269,30 @@ export default {
 		},
 
 		showEditModal(category,index){
-			let obj= {
-				id: category.id,
-				categoryName: category.categoryName,
-				iconImage:	  category.iconImage
-			}
-			this.editData= obj
+			this.editData= category
 			this.editModal= true
 			this.index= index
+			this.isEditingItem = true
 		},
 
-		async deleteTag(){
-			const res=await this.callApi('post','api/delete_tag',this.deleteitem)
+		closeEditModal(){
+			this.isEditingItem = false
+			this.editModal= false
+		},
+
+		async deleteCategory(){
+			const res=await this.callApi('post','api/delete_category',this.deleteitem)
 			if(res.status===200){
 				this.categories.splice(this.indx,1)
-				this.s('Tag has been deleted Successfully')
+				this.s('Category has been deleted Successfully')
 				this.showdeleteModal = false
 			}else{
 				this.swr('Something Went Wrong! Please Try Again..')
 			}
 		},
-		showTagDeleteModal(tag,i)
+		showTagDeleteModal(category,i)
 		{
-			this.deleteitem = tag,
+			this.deleteitem = category,
 			this.indx = i
 			this.showdeleteModal = true
 		}

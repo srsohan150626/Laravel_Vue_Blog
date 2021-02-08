@@ -49,4 +49,30 @@ class CategoryController extends Controller
     {
         return Category::orderBy('id','desc')->get();
     }
+
+    public function edit_category(Request $request)
+    {
+        $request->validate([
+            'categoryName' => 'required',
+            'iconImage' => 'required'
+        ]);
+
+
+       return Category::where('id',$request->id)
+                ->update([
+                    'categoryName' => $request->categoryName,
+                    'iconImage'    => $request->iconImage,
+                ]);
+    }
+
+    public function delete_category(Request $request)
+    {
+        $request->validate([
+            'id'      => 'required'
+        ]);
+        //dd($request->all()); 
+        $fileName = $request->iconImage;
+        $this->deleteFileFromServer($fileName);
+       return Category::where('id',$request->id)->delete();
+    }
 }

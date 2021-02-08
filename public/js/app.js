@@ -2089,11 +2089,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       deleteitem: {},
       indx: -1,
       token: '',
-      isIconimagenew: false
+      isIconimagenew: false,
+      isEditingItem: false
     };
   },
   methods: {
     handleSuccess: function handleSuccess(res, file) {
+      res = "uploads/".concat(res);
+
+      if (this.isEditingItem) {
+        return this.editData.iconImage = res;
+      }
+
       this.data.iconImage = res;
     },
     handleError: function handleError(res, file) {
@@ -2119,24 +2126,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var isAdd, _image, _image2, res;
-
+        var isAdd, image, res;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 isAdd = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : true;
 
-                //console.log(this.data.iconImage)
                 if (!isAdd) {
                   //for editing
                   _this.isIconimagenew = true;
-                  _image = _this.editData.iconImage;
+                  image = _this.editData.iconImage;
                   _this.editData.iconImage = '';
 
                   _this.$refs.editDatauploads.clearFiles();
                 } else {
-                  _image2 = _this.data.iconImage;
+                  image = _this.data.iconImage;
                   _this.data.iconImage = '';
 
                   _this.$refs.uploads.clearFiles();
@@ -2189,7 +2194,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context2.abrupt("return", _this2.e("Category Image is Required"));
 
               case 4:
-                _this2.data.iconImage = "/uploads/".concat(_this2.data.iconImage);
+                _this2.data.iconImage = "".concat(_this2.data.iconImage);
                 _context2.next = 7;
                 return _this2.callApi('post', 'api/create_category', _this2.data);
 
@@ -2243,29 +2248,41 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context3.abrupt("return", _this3.e("Category Name is Required"));
 
               case 2:
-                _context3.next = 4;
-                return _this3.callApi('post', 'api/edit_tag', _this3.editData);
+                if (!(_this3.editData.iconImage.trim() == '')) {
+                  _context3.next = 4;
+                  break;
+                }
+
+                return _context3.abrupt("return", _this3.e("Category Image is Required"));
 
               case 4:
+                _context3.next = 6;
+                return _this3.callApi('post', 'api/edit_category', _this3.editData);
+
+              case 6:
                 res = _context3.sent;
 
                 if (res.status == 200) {
-                  _this3.categories[_this3.index].tagName = _this3.editData.tagName;
+                  _this3.categories[_this3.index].categoryName = _this3.editData.categoryName;
 
-                  _this3.s('Tag has been updated Successfully');
+                  _this3.s('Category has been updated Successfully');
 
                   _this3.editModal = false;
                 } else {
                   if (res.status == 422) {
-                    if (res.data.errors.tagName) {
-                      _this3.i(res.data.errors.tagName[0]);
+                    if (res.data.errors.categoryName) {
+                      _this3.i(res.data.errors.categoryName[0]);
+                    }
+
+                    if (res.data.errors.iconImage) {
+                      _this3.i(res.data.errors.iconImage[0]);
                     }
                   } else {
                     _this3.swr('Something Went Wrong! Please Try Again..');
                   }
                 }
 
-              case 6:
+              case 8:
               case "end":
                 return _context3.stop();
             }
@@ -2274,16 +2291,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     showEditModal: function showEditModal(category, index) {
-      var obj = {
-        id: category.id,
-        categoryName: category.categoryName,
-        iconImage: category.iconImage
-      };
-      this.editData = obj;
+      this.editData = category;
       this.editModal = true;
       this.index = index;
+      this.isEditingItem = true;
     },
-    deleteTag: function deleteTag() {
+    closeEditModal: function closeEditModal() {
+      this.isEditingItem = false;
+      this.editModal = false;
+    },
+    deleteCategory: function deleteCategory() {
       var _this4 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
@@ -2293,7 +2310,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return _this4.callApi('post', 'api/delete_tag', _this4.deleteitem);
+                return _this4.callApi('post', 'api/delete_category', _this4.deleteitem);
 
               case 2:
                 res = _context4.sent;
@@ -2301,7 +2318,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 if (res.status === 200) {
                   _this4.categories.splice(_this4.indx, 1);
 
-                  _this4.s('Tag has been deleted Successfully');
+                  _this4.s('Category has been deleted Successfully');
 
                   _this4.showdeleteModal = false;
                 } else {
@@ -2316,8 +2333,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4);
       }))();
     },
-    showTagDeleteModal: function showTagDeleteModal(tag, i) {
-      this.deleteitem = tag, this.indx = i;
+    showTagDeleteModal: function showTagDeleteModal(category, i) {
+      this.deleteitem = category, this.indx = i;
       this.showdeleteModal = true;
     }
   },
@@ -67850,10 +67867,7 @@ var render = function() {
                     { staticStyle: { height: "100px", width: "100px" } },
                     [
                       _c("img", {
-                        attrs: {
-                          src: "/uploads/" + _vm.data.iconImage,
-                          alt: ""
-                        }
+                        attrs: { src: "" + _vm.data.iconImage, alt: "" }
                       }),
                       _vm._v(" "),
                       _c(
@@ -68026,11 +68040,7 @@ var render = function() {
                     "Button",
                     {
                       attrs: { type: "default" },
-                      on: {
-                        click: function($event) {
-                          _vm.addModal = false
-                        }
-                      }
+                      on: { click: _vm.closeEditModal }
                     },
                     [_vm._v("Close")]
                   ),
@@ -68104,7 +68114,7 @@ var render = function() {
                         long: "",
                         loading: _vm.isAdding
                       },
-                      on: { click: _vm.deleteTag }
+                      on: { click: _vm.deleteCategory }
                     },
                     [_vm._v("Delete")]
                   )
@@ -85212,8 +85222,8 @@ var routes = [//projects route
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\sohan_project\laravueblog\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\sohan_project\laravueblog\resources\css\app.css */"./resources/css/app.css");
+__webpack_require__(/*! D:\project\Laravel_Vue_Blog\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\project\Laravel_Vue_Blog\resources\css\app.css */"./resources/css/app.css");
 
 
 /***/ })
