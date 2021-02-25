@@ -11,6 +11,9 @@ import home from './components/pages/home.vue'
 import tags from './admin/pages/tags.vue' 
 import category from './admin/pages/category.vue'
 
+//vuex 
+import usecomp from './vuex/usecomp'
+
 const routes = [
     //projects route 
     {
@@ -25,7 +28,10 @@ const routes = [
         path: '/category',
         component: category
     },
-
+    {
+        path: '/testvuex',
+        component: usecomp
+    },
 
 
 

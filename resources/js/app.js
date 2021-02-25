@@ -2,6 +2,7 @@ require('./bootstrap');
 
 window.Vue = require('vue')
 import router from './router'
+import store from './store'
 Vue.component('mainapp', require('./components/mainapp.vue').default)
 
 import ViewUI from 'view-design';
@@ -13,5 +14,6 @@ Vue.mixin(common)
 
 const app = new Vue({
    el: '#app' ,
-   router
+   router,
+   store
 });
